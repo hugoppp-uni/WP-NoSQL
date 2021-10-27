@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using StackExchange.Redis;
 
 namespace backend.Controllers
 {
@@ -17,15 +17,21 @@ namespace backend.Controllers
         };
 
         private readonly ILogger<WeatherForecastController> _logger;
+        private readonly IConnectionMultiplexer _redis;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, IConnectionMultiplexer redis)
         {
             _logger = logger;
+            _redis = redis;
         }
 
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {
+            var redisDb = _redis.GetDatabase();
+
+            Console.WriteLine($"redis ping: {redisDb.Ping()}");
+
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
