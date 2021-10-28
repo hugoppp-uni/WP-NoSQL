@@ -1,5 +1,4 @@
-using System.Diagnostics;
-using System.Linq;
+using backend.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -27,17 +26,11 @@ namespace backend
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo { Title = "backend", Version = "v1" }); });
 
             ConnectionMultiplexer redisConnectionMultiplexer = ConnectionMultiplexer.Connect("localhost,allowAdmin=true");
+            redisConnectionMultiplexer.GetServer().FlushDatabase();
+
             services.AddSingleton<IConnectionMultiplexer>(redisConnectionMultiplexer);
+            services.AddSingleton<CityService>();
 
-            FlushRedisDb(redisConnectionMultiplexer);
-            PlzData.ImportToRedis(redisConnectionMultiplexer);
-        }
-
-        private static void FlushRedisDb(ConnectionMultiplexer redisConnectionMultiplexer)
-        {
-            IServer server = redisConnectionMultiplexer.GetServer(redisConnectionMultiplexer.GetEndPoints().First());
-            server.FlushDatabase();
-            Debug.Assert(!server.Keys().Any());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
