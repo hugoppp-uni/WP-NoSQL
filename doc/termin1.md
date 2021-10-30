@@ -1,11 +1,11 @@
 # Termin 1 Dokumentation
 ## Aufgabe 4
 Die Aufgabe wurde in Form einer REST-API gelöst.
-Die Dokumentation dieser ist unter Anderem mithilfe von Swagger auf Port `31474` (`http://localhost:31474/swagger`) vorzufinden.
+Die Dokumentation dieser ist unter anderem mithilfe von Swagger auf Port `31474` (`http://localhost:31474/swagger`) vorzufinden.
 
-Es existieren zwei Endpoints, welche im `PlzDataController` defeniert sind:
+Es existieren zwei Endpoints, welche im `PlzDataController` definiert sind:
  1. `GET /city/{zipCode}` gibt die den Stadtnamen und Staat der Postleitzahl zurück.
- 2. `GET /zip/{cityName}` gibt eine Liste aller Postleizahlen züruck, dessen Stadtnahme `cityName` entspricht.
+ 2. `GET /zip/{cityName}` gibt eine Liste aller Postleitzahlen zurück, dessen Stadtname `cityName` entspricht.
 
 In der Redis Datenbank werden dafür die folgenden Daten importiert:
 
@@ -17,7 +17,7 @@ In der Redis Datenbank werden dafür die folgenden Daten importiert:
 
 ## Aufgabe 6
 Die Cypher-Anfrage, die für den Knoten mit der ID `/f/en/baseball` alle direkt mit dem
-Kantenlabel „IsA“ verbundenen Knoten lautet:
+Kantenlabel `IsA` verbundenen Knoten lautet:
 ```cypher
 Match (baseball{id:"/c/en/baseball"})-[isA:IsA]->(n)
 return n
