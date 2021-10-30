@@ -3,7 +3,7 @@
 Die Aufgabe wurde in Form einer REST-API gelöst.
 Die Dokumentation dieser ist unter anderem mithilfe von Swagger auf Port `31474` (`http://localhost:31474/swagger`) vorzufinden.
 
-Es existieren zwei Endpoints, welche im `PlzDataController` definiert sind:
+Es existieren zwei Endpoints, welche im `ZipDataController` definiert sind:
  1. `GET /city/{zipCode}` gibt die den Stadtnamen und Staat der Postleitzahl zurück.
  2. `GET /zip/{cityName}` gibt eine Liste aller Postleitzahlen zurück, dessen Stadtname `cityName` entspricht.
 
@@ -11,7 +11,7 @@ In der Redis Datenbank werden dafür die folgenden Daten importiert:
 
 1. Key: `{zip}.state` Value: Der Staat, in dem sich die Stadt mit der Postleitzahl `{zip}` befindet
 2. Key: `{zip}.city` Value: Der Name der Stadt mit der Postleitzahl `{zip}`
-3. Key: `{city}.plz` Value: Eine Liste aller Postleitzahlen mit dem Stadtnamen `{city}`
+3. Key: `{city}.zip` Value: Eine Liste aller Postleitzahlen mit dem Stadtnamen `{city}`
 
 ## Aufgabe 5
 
