@@ -1,4 +1,4 @@
-# Termin 1 Dokumentation
+# Termin 2 Dokumentation
 ## Aufgabe 4
 Die Aufgabe wurde in Form einer REST-API gelöst.
 Die Dokumentation dieser ist unter anderem mithilfe von Swagger auf Port `31474` (`http://localhost:31474/swagger`) vorzufinden.

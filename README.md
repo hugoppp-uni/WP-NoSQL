@@ -1,25 +1,18 @@
 # nosql
 
-# Aufgabe 4:
-## Start Redis Docker image:
-    docker run --rm -d -p 6379:6379  --name plz-redis-db redis
-- flag -rm: volumes will be deleted after exit 
-- flag -d: container process is detached (background process)
-- flag -p: Expose port 6379 from docker-process to local port 6379
+## Aufgabe 4
+Die Aufgabe wurde in Form einer REST-API gelöst.
+Die Dokumentation dieser ist unter anderem mithilfe von Swagger auf Port `31474` (`http://localhost:31474/swagger`) vorzufinden.
 
+Es existieren zwei Endpoints, welche im `ZipDataController` definiert sind:
+1. `GET /city/{zipCode}` gibt die den Stadtnamen und Staat der Postleitzahl zurück.
+2. `GET /zip/{cityName}` gibt eine Liste aller Postleitzahlen zurück, dessen Stadtname `cityName` entspricht.
 
- Insert .plz data into Redis DB with python script in project folder:
-    ``
-    python3 fill_redis_db_with_plz_data.py
-    ``
+In der Redis Datenbank werden dafür die folgenden Daten importiert:
 
-## Start Client Application to access DB:
-
-## Start Redis CLI:
-    docker exec -it plz-redis-db redis-cli
-
-## Stop docker cointainers:
-    docker stop <Hash of Process>
+1. Key: `{zip}.state` Value: Der Staat, in dem sich die Stadt mit der Postleitzahl `{zip}` befindet
+2. Key: `{zip}.city` Value: Der Name der Stadt mit der Postleitzahl `{zip}`
+3. Key: `{city}.zip` Value: Eine Liste aller Postleitzahlen mit dem Stadtnamen `{city}`
 
 # Aufgabe 5:
 # 1. Start Neo4j (graph db):
