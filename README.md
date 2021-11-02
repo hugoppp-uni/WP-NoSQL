@@ -38,7 +38,7 @@ Output Graph Alexander:
 
 Output Graph Hugo:
 
-![ModulesGraphOutputHugo](Aufgabe5-graph-db/ModulesGraphOutputHugo.svg)
+![ModulesGraphOutputHugo](Aufgabe5-graph-db/ModulesGraphOutputHugo.png)
 
 // Aufgabe 5b 1.): Welche Module sind für NoSQL/BigData nützlich?
 
