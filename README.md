@@ -31,9 +31,14 @@ Browser runs on localhost:7474
 username: neo4j pw: test
 ```
 
-# 2. Run script of cypher_code.cypher file in Neo4j browser Interface
-Output Graph:
-![](Aufgabe5-graph-db/ModulesGraphOutput.png)
+# 2. Run script of `ModulesAlexander.cypher` / `ModulesHugo.cypher` file in Neo4j browser Interface
+Output Graph Alexander:
+
+![ModulesGraphOutputAlexander](Aufgabe5-graph-db/ModulesGraphOutputAlexander.png)
+
+Output Graph Hugo:
+
+![ModulesGraphOutputHugo](Aufgabe5-graph-db/ModulesGraphOutputHugo.svg)
 
 // Aufgabe 5b 1.): Welche Module sind für NoSQL/BigData nützlich?
 
