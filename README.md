@@ -18,8 +18,7 @@ In der Redis Datenbank werden dafür die folgenden Daten importiert:
 3. Key: `{city}.zip` Value: Eine Liste aller Postleitzahlen mit dem Stadtnamen `{city}`
 
 ## Aufgabe 5: Absolvierte Module
-### 1. Start Neo4j (graph db):
-
+1. Start Neo4j (graph db):
 ```bash
 docker run \
     --name our-neo4j \
@@ -27,14 +26,11 @@ docker run \
     --env NEO4J_AUTH=neo4j/test \
     neo4j:latest
 ```
-
 Browser runs on localhost:7474
-
 ```
 username: neo4j pw: test
 ```
-
-### 2. Run script of `ModulesAlexander.cypher` / `ModulesHugo.cypher` file in Neo4j browser Interface
+2. Run script of `ModulesAlexander.cypher` / `ModulesHugo.cypher` file in Neo4j browser Interface
 Output Graph Alexander:
 
 ![ModulesGraphOutputAlexander](Aufgabe5-graph-db/ModulesGraphOutputAlexander.png)
@@ -43,30 +39,26 @@ Output Graph Hugo:
 
 ![ModulesGraphOutputHugo](Aufgabe5-graph-db/ModulesGraphOutputHugo.png)
 
-Aufgabe 5b 1.): Welche Module sind für NoSQL/BigData nützlich?
-
+- Aufgabe 5b 1.): Welche Module sind für NoSQL/BigData nützlich?
 ```cypher
 MATCH (c1:Course)-[:USED_IN]->(c2:Course) WHERE c2.name = "NOSQL" RETURN DISTINCT c1.name
 ```
-
-Aufgabe 5b 2.): Welche Module wurden bisher im Studium nicht wieder genutzt? 
+- Aufgabe 5b 2.): Welche Module wurden bisher im Studium nicht wieder genutzt? 
 Anders formuliert: Welche Knoten haben keinen Nachfolgeknoten?
-
 ```cypher
 MATCH (c1:Course) WHERE NOT exists((c1)-[:USED_IN]->()) RETURN DISTINCT c1.name`
 ```
 
 ## Aufgabe 6 Conceptnet
-### Open bash on container and remove folders in data folder:
+1. Open bash on container and remove folders in data folder:
 ```bash
 docker exec -it our-neo4j  /bin/bash
 ```
-### Import of data via docker cp command:
+2. Import of data via docker cp command:
 ```bash
 docker cp /Users/alexander.koenemann/IdeaProjects/NoSQLWP/nosqlHugoAlex/Aufgabe6-graph-db/neo4j-v4-data/. our-neo4j:data/
 ```
-
-Query:
+3. Query:
 ```cypher
 MATCH (n {id: "/c/en/baseball"})-[r:IsA]-(result) RETURN result.id
 ````
@@ -100,7 +92,7 @@ db.fussball.insertMany([
 ]);
 ```
 ### Abfragen
-1. mit Namen "Augsburg"
+1. alle Vereine, mit Namen "Augsburg"
 ```javascript
 db.getCollection("fussball").find({ "name" : "Augsburg" })
 ```
