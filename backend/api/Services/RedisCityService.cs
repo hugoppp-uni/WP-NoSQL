@@ -11,7 +11,8 @@ using StackExchange.Redis;
 
 namespace backend.Services
 {
-    public class CityService
+
+    public class RedisCityService : ICityService
     {
         private const string StateKeyPostfix = ".state";
         private const string NameKeyPostfix = ".name";
@@ -19,7 +20,7 @@ namespace backend.Services
 
         private readonly IConnectionMultiplexer _redis;
 
-        public CityService(IConnectionMultiplexer redis, ILogger<CityService> logger)
+        public RedisCityService(IConnectionMultiplexer redis, ILogger<RedisCityService> logger)
         {
             _redis = redis;
             ImportToRedis(redis);

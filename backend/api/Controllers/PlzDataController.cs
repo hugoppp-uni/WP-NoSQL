@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using backend.Models;
 using backend.Services;
@@ -8,12 +7,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace backend.Controllers
 {
     [ApiController]
-    // [Route("[controller]")]
+    [Route("Redis")]
     public class PlzDataController : ControllerBase
     {
-        private readonly CityService _cityService;
+        private readonly ICityService _cityService;
 
-        public PlzDataController(CityService cityService)
+        public PlzDataController(ICityService cityService)
         {
             _cityService = cityService;
         }

@@ -1,3 +1,4 @@
+using System;
 using backend.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -5,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using MongoDB.Driver;
 using StackExchange.Redis;
 
 namespace backend
@@ -12,9 +14,12 @@ namespace backend
 
     public class Startup
     {
+        private readonly Db _dbToUse;
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            _dbToUse = configuration.GetValue<Db>("Db");
         }
 
         public IConfiguration Configuration { get; }
@@ -29,11 +34,52 @@ namespace backend
                 options.IncludeXmlComments("bin\\doc.xml");
             });
 
-            ConnectionMultiplexer redisConnectionMultiplexer = ConnectionMultiplexer.Connect("localhost,allowAdmin=true");
-            redisConnectionMultiplexer.GetServer().FlushDatabase();
+            //connect to db lazily
+            services.AddSingleton((_) => ConnectMongoDB());
+            services.AddSingleton<IConnectionMultiplexer>((_) => ConnectRedis());
 
-            services.AddSingleton<IConnectionMultiplexer>(redisConnectionMultiplexer);
-            services.AddSingleton<CityService>();
+            if (_dbToUse == Db.Redis)
+                services.AddSingleton<ICityService, RedisCityService>();
+            else if (_dbToUse == Db.MongoDB)
+                services.AddSingleton<ICityService, MongoCityService>();
+
+            services.AddSingleton<MongoCityService>();
+        }
+
+
+        private static IMongoDatabase ConnectMongoDB()
+        {
+            IMongoDatabase? mongodb;
+            try
+            {
+                var client = new MongoClient(
+                    "mongodb://localhost:27017"
+                );
+                client.GetDatabase("db");
+                mongodb = client.GetDatabase("db");
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Could not connect to mongodb", e);
+            }
+
+            return mongodb;
+        }
+
+        private static ConnectionMultiplexer ConnectRedis()
+        {
+            ConnectionMultiplexer redisConnectionMultiplexer;
+            try
+            {
+                redisConnectionMultiplexer = ConnectionMultiplexer.Connect("localhost,allowAdmin=true");
+                redisConnectionMultiplexer.GetServer().FlushDatabase();
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Could not connect to redis", e);
+            }
+
+            return redisConnectionMultiplexer;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -51,6 +97,12 @@ namespace backend
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+        }
+
+        private enum Db
+        {
+            Redis,
+            MongoDB,
         }
     }
 
