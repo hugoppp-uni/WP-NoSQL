@@ -1,6 +1,7 @@
-# nosql
+[TOC]
+# NoSQl Praktikum
 
-## Aufgabe 4
+## Aufgabe 4: PLZ-API Redis
 Die Aufgabe wurde in Form einer REST-API gelöst.
 Die Dokumentation dieser ist unter anderem mithilfe von Swagger auf Port `31474` (`http://localhost:31474/swagger`) vorzufinden.
 
@@ -14,8 +15,8 @@ In der Redis Datenbank werden dafür die folgenden Daten importiert:
 2. Key: `{zip}.city` Value: Der Name der Stadt mit der Postleitzahl `{zip}`
 3. Key: `{city}.zip` Value: Eine Liste aller Postleitzahlen mit dem Stadtnamen `{city}`
 
-# Aufgabe 5:
-# 1. Start Neo4j (graph db):
+## Aufgabe 5: Absolvierte Module
+### 1. Start Neo4j (graph db):
 
 ```
 docker run \
@@ -31,7 +32,7 @@ Browser runs on localhost:7474
 username: neo4j pw: test
 ```
 
-# 2. Run script of `ModulesAlexander.cypher` / `ModulesHugo.cypher` file in Neo4j browser Interface
+### 2. Run script of `ModulesAlexander.cypher` / `ModulesHugo.cypher` file in Neo4j browser Interface
 Output Graph Alexander:
 
 ![ModulesGraphOutputAlexander](Aufgabe5-graph-db/ModulesGraphOutputAlexander.png)
@@ -49,12 +50,12 @@ Anders formuliert: Welche Knoten haben keinen Nachfolgeknoten?
 
 `MATCH (c1:Course) WHERE NOT exists((c1)-[:USED_IN]->()) RETURN DISTINCT c1.name`
 
-# Aufgabe 6:
-## Open bash on container and remove folders in data folder:
+## Aufgabe 6 Conceptnet
+### Open bash on container and remove folders in data folder:
 ```
 docker exec -it our-neo4j  /bin/bash
 ```
-## Import of data via docker cp command:
+### Import of data via docker cp command:
 ```
 docker cp /Users/alexander.koenemann/IdeaProjects/NoSQLWP/nosqlHugoAlex/Aufgabe6-graph-db/neo4j-v4-data/. our-neo4j:data/
 ```
@@ -63,3 +64,65 @@ Query:
 ```
 MATCH (n {id: "/c/en/baseball"})-[r:IsA]-(result) RETURN result.id
 ````
+## Aufgabe 8: Sinn des Lebens
+### Vorbereitung
+- Starten der shell:
+   - `docker exec -it {container name} bash`
+   - `mongo`
+
+- Löschen der Daten: 
+  - `db.getCollection("fussball").drop()`
+
+- Zählen der Daten:
+  - `db.getCollection("fussball").find().count()`
+
+a) Einfügen der Daten
+```javascript
+db.fussball.insertMany([
+    {name: 'HSV', gruendung: new Date(1888, 09, 29), farben: ['weiss', 'rot'], Tabellenplatz: 17, nike: 'n'},
+    {name: 'Dortmund', gruendung: new Date(1909, 12, 19), farben: ['gelb', 'schwarz'], Tabellenplatz: 16, nike: 'n'},
+    {name: 'Schalke', gruendung: new Date(1904, 5, 4), farben: ['blau'], Tabellenplatz: 15, nike: 'n'},
+    {name: 'Paderborn', gruendung: new Date(1907, 8, 14), farben:['blau', 'weiss', ], Tabellenplatz:14, nike:'n', },
+    {name: 'Hertha', gruendung: new Date(1892, 7, 25), farben: ['blau', 'weiss'], Tabellenplatz: 13, nike: 'j'},
+    {name: 'Augsburg', gruendung: new Date(1907, 8, 8), farben: ['rot', 'weiss'], Tabellenplatz: 12,  nike: 'j'},
+    {name: 'Pauli', gruendung: new Date(1910, 5, 15), farben: ['braun', 'weiss'], Tabellenplatz: 11, nike: 'n'},
+    {name: 'Gladbach', gruendung: new Date(1900, 8,1), farben: ['schwarz', 'weiss', 'gruen'], Tabellenplatz: 10, nike: 'n'},
+    {name: 'Frankfurt', gruendung: new Date(1899, 3, 8), farben: ['rot', 'schwarz', 'weiss'], Tabellenplatz: 9, nike: 'j'},
+    {name: 'Leverkusen', gruendung: new Date(1904, 11, 20, 16, 15), farben: ['rot', 'schwarz'], Tabellenplatz: 8, nike: 'n'},
+    {name: 'Stuttgart', gruendung: new Date(1893, 9, 9 ), farben: ['rot', 'weiss'], Tabellenplatz: 7, nike: 'n'},
+    {name: 'Werder', gruendung: new Date(1899,2,4), farben: ['gruen','weiss'], Tabellenplatz: 6, nike: 'j'}
+]);
+```
+### Abfragen
+1. mit Namen "Augsburg"
+```javascript
+db.getCollection("fussball").find({ "name" : "Augsburg" })
+```
+2. alle Nike-Vereine, welche schwarz als mindestens eine Vereinsfarbe haben
+```javascript
+db.getCollection("fussball").find({ "nike" : "j", "farben" : { $all: [ "schwarz" ] } })
+```
+3. alle Nike-Vereine, welche weiss und grün als Vereinsfarbe haben
+```javascript
+db.getCollection("fussball").find({ "nike" : "j", "farben" : { $all: [ "weiss", "gruen" ] } })
+```
+4. alle Nike-Vereine, welche weiss oder grün als Vereinsfarbe haben
+```javascript
+ db.getCollection("fussball").find( 
+     { "nike" : "j",
+         $or: [
+             { "farben" : { $all: [ "gruen" ] } },
+             { "farben" : { $all: [ "weiss" ] } } 
+         ] 
+     } 
+ );
+```
+5. den Verein mit dem höchsten Tabellenplatz
+```javascript
+db.getCollection("fussball").find().sort({ Tabellenplatz : 1 }).limit(1)
+```
+6. alle Vereine, die nicht auf einem Abstiegsplatz stehen
+```javascript
+db.getCollection("fussball").find({ Tabellenplatz : { $lt : 15 } })
+```
+
