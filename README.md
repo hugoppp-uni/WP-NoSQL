@@ -1,7 +1,7 @@
 [TOC]
 # NoSQL Praktikum - Alexander Könemann, Hugo Protsch
 
-# NoSQl Praktikum 1
+# NoSQl Termin 1
 
 ## Aufgabe 4: PLZ-API Redis
 Die Aufgabe wurde in Form einer REST-API gelöst.
@@ -31,11 +31,12 @@ Browser runs on localhost:7474
 username: neo4j pw: test
 ```
 2. Run script of `ModulesAlexander.cypher` / `ModulesHugo.cypher` file in Neo4j browser Interface
-Output Graph Alexander:
+
+### Output Graph Alexander
 
 ![ModulesGraphOutputAlexander](Aufgabe5-graph-db/ModulesGraphOutputAlexander.png)
 
-Output Graph Hugo:
+### Output Graph Hugo
 
 ![ModulesGraphOutputHugo](Aufgabe5-graph-db/ModulesGraphOutputHugo.png)
 
