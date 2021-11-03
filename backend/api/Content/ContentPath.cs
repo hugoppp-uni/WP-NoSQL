@@ -10,6 +10,7 @@ namespace backend.Content
                                                      throw new Exception("Executable location could not be determined");
 
         public static string PlzData { get; } = GetAbsoluteContent("plz.data");
+        public static string SinnDesLebens { get; } = GetAbsoluteContent("sinndeslebens.txt");
 
         private static string GetAbsoluteContent(string location)
         {
