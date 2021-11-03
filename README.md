@@ -1,5 +1,7 @@
 [TOC]
-# NoSQl Praktikum
+# NoSQL Praktikum - Alexander Könemann, Hugo Protsch
+
+# NoSQl Praktikum 1
 
 ## Aufgabe 4: PLZ-API Redis
 Die Aufgabe wurde in Form einer REST-API gelöst.
@@ -18,7 +20,7 @@ In der Redis Datenbank werden dafür die folgenden Daten importiert:
 ## Aufgabe 5: Absolvierte Module
 ### 1. Start Neo4j (graph db):
 
-```
+```bash
 docker run \
     --name our-neo4j \
     -p7474:7474 -p7687:7687 \
@@ -41,38 +43,42 @@ Output Graph Hugo:
 
 ![ModulesGraphOutputHugo](Aufgabe5-graph-db/ModulesGraphOutputHugo.png)
 
-// Aufgabe 5b 1.): Welche Module sind für NoSQL/BigData nützlich?
+Aufgabe 5b 1.): Welche Module sind für NoSQL/BigData nützlich?
 
-`MATCH (c1:Course)-[:USED_IN]->(c2:Course) WHERE c2.name = "NOSQL" RETURN DISTINCT c1.name`
+```cypher
+MATCH (c1:Course)-[:USED_IN]->(c2:Course) WHERE c2.name = "NOSQL" RETURN DISTINCT c1.name
+```
 
-// Aufgabe 5b 2.): Welche Module wurden bisher im Studium nicht wieder genutzt? 
+Aufgabe 5b 2.): Welche Module wurden bisher im Studium nicht wieder genutzt? 
 Anders formuliert: Welche Knoten haben keinen Nachfolgeknoten?
 
-`MATCH (c1:Course) WHERE NOT exists((c1)-[:USED_IN]->()) RETURN DISTINCT c1.name`
+```cypher
+MATCH (c1:Course) WHERE NOT exists((c1)-[:USED_IN]->()) RETURN DISTINCT c1.name`
+```
 
 ## Aufgabe 6 Conceptnet
 ### Open bash on container and remove folders in data folder:
-```
+```bash
 docker exec -it our-neo4j  /bin/bash
 ```
 ### Import of data via docker cp command:
-```
+```bash
 docker cp /Users/alexander.koenemann/IdeaProjects/NoSQLWP/nosqlHugoAlex/Aufgabe6-graph-db/neo4j-v4-data/. our-neo4j:data/
 ```
 
 Query:
-```
+```cypher
 MATCH (n {id: "/c/en/baseball"})-[r:IsA]-(result) RETURN result.id
 ````
+
+# Termin 2
 ## Aufgabe 8: Sinn des Lebens
 ### Vorbereitung
 - Starten der shell:
    - `docker exec -it {container name} bash`
    - `mongo`
-
 - Löschen der Daten: 
   - `db.getCollection("fussball").drop()`
-
 - Zählen der Daten:
   - `db.getCollection("fussball").find().count()`
 
