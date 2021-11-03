@@ -14,7 +14,7 @@
 
     <ItemGroup>
         <None Remove="res\plz.data" />
-        <Content Include="res\plz.data">
+        <Content Include="Content\plz.data">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
+using backend.Content;
 using backend.Models;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
@@ -51,10 +51,8 @@ namespace backend.Services
         private static void ImportToRedis(IConnectionMultiplexer redis)
         {
             var db = redis.GetDatabase();
-            const string path = "res\\plz.data";
-            string combine = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, path);
 
-            JsonElement[] jsons = File.ReadAllLines(combine)
+            JsonElement[] jsons = File.ReadAllLines(ContentPath.PlzData)
                 .Select(line => JsonSerializer.Deserialize<JsonElement>(line))
                 .ToArray();
 
