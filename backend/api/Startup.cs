@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using backend.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -48,23 +51,19 @@ namespace backend
         }
 
 
-        private static IMongoDatabase ConnectMongoDB()
+        private static IMongoClient ConnectMongoDB()
         {
-            IMongoDatabase? mongodb;
             try
             {
-                var client = new MongoClient(
-                    "mongodb://localhost:27017"
-                );
-                client.GetDatabase("db");
-                mongodb = client.GetDatabase("db");
+                var client = new MongoClient("mongodb://localhost:27017");
+                IEnumerable<Task> dropAllDatabaseTasks = client.ListDatabaseNames().ToEnumerable().Select(x => client.DropDatabaseAsync(x));
+                Task.WhenAll(dropAllDatabaseTasks);
+                return client;
             }
             catch (Exception e)
             {
                 throw new Exception("Could not connect to mongodb", e);
             }
-
-            return mongodb;
         }
 
         private static ConnectionMultiplexer ConnectRedis()

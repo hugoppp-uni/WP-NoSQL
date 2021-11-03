@@ -11,9 +11,9 @@ namespace backend.Services
         private readonly IMongoDatabase _mongo;
         private readonly ILogger<MongoCityService> _logger;
 
-        public MongoCityService(IMongoDatabase mongo, ILogger<MongoCityService> logger)
+        public MongoCityService(IMongoClient mongoClient, ILogger<MongoCityService> logger)
         {
-            _mongo = mongo;
+            _mongo = mongoClient.GetDatabase("CityService");
             _logger = logger;
 
             logger.LogInformation("started city service mongo");
