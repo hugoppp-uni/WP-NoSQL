@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace backend.Controllers
 {
     [ApiController]
-    [Route("Redis")]
     public class PlzDataController : ControllerBase
     {
         private readonly ICityService _cityService;
