@@ -61,7 +61,7 @@ docker cp /Users/alexander.koenemann/IdeaProjects/NoSQLWP/nosqlHugoAlex/Aufgabe6
 ```
 3. Query:
 ```cypher
-MATCH (n {id: "/c/en/baseball"})-[r:IsA]-(result) RETURN result.id
+MATCH (n {id : "/c/en/baseball"})-[r:IsA]-(result) RETURN result.id
 ````
 
 # Termin 2
@@ -92,26 +92,26 @@ db.fussball.insertMany([
     {name: 'Werder', gruendung: new Date(1899,2,4), farben: ['gruen','weiss'], Tabellenplatz: 6, nike: 'j'}
 ]);
 ```
-### Abfragen
+### Find Abfragen
 1. alle Vereine, mit Namen "Augsburg"
 ```javascript
 db.getCollection("fussball").find({ "name" : "Augsburg" })
 ```
 2. alle Nike-Vereine, welche schwarz als mindestens eine Vereinsfarbe haben
 ```javascript
-db.getCollection("fussball").find({ "nike" : "j", "farben" : { $all: [ "schwarz" ] } })
+db.getCollection("fussball").find({ "nike" : "j", "farben" : { $all : [ "schwarz" ] } })
 ```
 3. alle Nike-Vereine, welche weiss und grün als Vereinsfarbe haben
 ```javascript
-db.getCollection("fussball").find({ "nike" : "j", "farben" : { $all: [ "weiss", "gruen" ] } })
+db.getCollection("fussball").find({ "nike" : "j", "farben" : { $all : [ "weiss", "gruen" ] } })
 ```
 4. alle Nike-Vereine, welche weiss oder grün als Vereinsfarbe haben
 ```javascript
  db.getCollection("fussball").find( 
      { "nike" : "j",
-         $or: [
-             { "farben" : { $all: [ "gruen" ] } },
-             { "farben" : { $all: [ "weiss" ] } } 
+         $or : [
+             { "farben" : { $all : [ "gruen" ] } },
+             { "farben" : { $all : [ "weiss" ] } } 
          ] 
      } 
  );
@@ -123,5 +123,35 @@ db.getCollection("fussball").find().sort({ Tabellenplatz : 1 }).limit(1)
 6. alle Vereine, die nicht auf einem Abstiegsplatz stehen
 ```javascript
 db.getCollection("fussball").find({ Tabellenplatz : { $lt : 15 } })
+```
+7. Erstellen Sie eine beliebige andere sinnvolle Abfrage und unterdrücken Sie dabei die Ausgabe des \_id Feldes
+```javascript
+db.getCollection("fussball").find({ gruendung : { $gt : new Date(1900, 1, 1) } }, { _id : 0 })
+```
+
+### Update Abfragen
+Führen sie folgende Änderungsoperation aus:
+```javascript
+db.fussball.update({ name : 'Augsburg' }, { Tabellenplatz : 1 })
+```
+Was beobachten sie als Ergebnis?
+  - `{ "_id" : ObjectId("618bfaafa0817d590df179df"), "Tabellenplatz" : 1 }`
+  Das komplette Objekt wird durch das übergebene (`"Tabellenplatz" : 1`) ersetzt. Die id bleibt jedoch gleich.
+
+1. Ändern sie den Tabellenplatz von Leverkusen auf 2
+```javascript
+db.fussball.update({ name : "Leverkusen" }, { $set : { Tabellenplatz : 2 } })
+```
+2. Werder soll um einen Tabellenplatz nach vorne gebracht werden
+```javascript
+db.fussball.update({ name : "Leverkusen" }, { $inc : { Tabellenplatz : - 1 } })
+```
+3. Ergänzen sie für den HSV ein Attribut „abgestiegen“ mit einem sinnvollen Wert
+```javascript
+db.fussball.update({ name : "HSV" }, { $set : { "abgestiegen" : 1 } })
+```
+4. Ergänzen sie für alle Vereine, deren Vereinsfarbe weiss enthält, ein Attribut "Waschtemperatur" mit dem Wert 90.
+```javascript
+db.fussball.update({ "farben" : { $all : ["weiss"] } }, { $set : { "Waschtemperatur" : 90 } }, { multi : true } )
 ```
 
