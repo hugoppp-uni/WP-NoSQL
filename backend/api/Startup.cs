@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using backend.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using MongoDB.Driver;
 using StackExchange.Redis;
 
 namespace backend
@@ -39,8 +34,8 @@ namespace backend
             });
 
             //connect to db lazily
-            services.AddSingleton((_) => ConnectMongoDB());
-            services.AddSingleton<IConnectionMultiplexer>((_) => ConnectRedis());
+            services.AddSingleton((_) => ConnectionCreator.Mongo());
+            services.AddSingleton<IConnectionMultiplexer>((_) => ConnectionCreator.Redis());
 
             if (_dbToUse == Db.Redis)
                 services.AddSingleton<ICityService, RedisCityService>();
@@ -50,37 +45,6 @@ namespace backend
             services.AddSingleton<MongoCityService>();
         }
 
-
-        private static IMongoClient ConnectMongoDB()
-        {
-            try
-            {
-                var client = new MongoClient("mongodb://localhost:27017");
-                IEnumerable<Task> dropAllDatabaseTasks = client.ListDatabaseNames().ToEnumerable().Select(x => client.DropDatabaseAsync(x));
-                Task.WhenAll(dropAllDatabaseTasks);
-                return client;
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Could not connect to mongodb", e);
-            }
-        }
-
-        private static ConnectionMultiplexer ConnectRedis()
-        {
-            ConnectionMultiplexer redisConnectionMultiplexer;
-            try
-            {
-                redisConnectionMultiplexer = ConnectionMultiplexer.Connect("localhost,allowAdmin=true");
-                redisConnectionMultiplexer.GetServer().FlushDatabase();
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Could not connect to redis", e);
-            }
-
-            return redisConnectionMultiplexer;
-        }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
