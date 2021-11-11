@@ -1,3 +1,4 @@
+using System.IO;
 using backend.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -30,10 +31,10 @@ namespace backend
             services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc("v1", new OpenApiInfo { Title = "WPP NoSql API - Alexander Könemann, Hugo Protsch", Version = "v1" });
-                options.IncludeXmlComments("bin\\doc.xml");
+                options.IncludeXmlComments(Path.Combine("bin","doc.xml"));
             });
 
-            //connect to db lazily
+            // connect to db lazily
             services.AddSingleton((_) => ConnectionCreator.Mongo());
             services.AddSingleton<IConnectionMultiplexer>((_) => ConnectionCreator.Redis());
 
