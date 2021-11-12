@@ -1,0 +1,15 @@
+version: '3'
+services:
+  redis:
+    image: redis
+    container_name: redis-plz-db
+    ports:
+      - "6379:6379"
+  mongodb:
+    image: mongo
+    container_name: mongo-plz-vereine-db
+    ports:
+      - "27017:27017"
+  cassandra:
+    image: cassandra:latest
+    container_name: cassandra-db
