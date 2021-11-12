@@ -66,34 +66,36 @@ MATCH (n {id : "/c/en/baseball"})-[r:IsA]-(result) RETURN result.id
 
 # Termin/Blatt 3
 ## Aufgabe 7: Mongo DB API
-Die Aufgabe wurde in Form einer REST-API gelöst. Die Dokumentation dieser ist unter anderem mithilfe von Swagger auf
-Port `31474` (`http://localhost:31474/swagger/index.html`) vorzufinden.
+Für die Aufgabe wird weiterhin die REST-API aus dem vorherigen Aufgabenblatt verwendet.
+In den `appsettings.json` wurde ein zusätzlicher Key `Db` eingeführt, über den zwischen `Redis`, `MongoDB` und zukünftig 
+`Cassandra` gewählt werden kann.
+
+### Architekur
+
+Der REST-API Controller `PlzDataController` erhält über Dependency-Injection einen `ICityService` übergeben.
+Dieses Interface stellt zwei Methoden bereit:
+1. `City? GetCityFromZip(string zip);`
+2. `IEnumerable<string> GetZipsFromCity(string city);`
+
+Dieses Interface wird jeweils einmal pro Datenbank implementiert.
+So gibt es aktuel einen `MongoCityService` und einen `RedisCityService`.
+Einer dieser Implementationen (wie in `appsettings.json` spezifiziert) wird beim Initialisieren der
+Anwendung in der Klasse `Startup` in den Konstruktor des Controllers injiziert.
+
+Des weitern wurde eine `docker-compose.yml` hinzugefügt, welche es erlaubt alle benötigten Docker
+Container in einer Datei zu konfigurieren und diese anschließend mit einem Befehl zu starten.
+
 ### Vorbereitung
 
 - Starten der shell:
   - `docker compose up` startet die Mongo, Redis und Cassandra DB container.
 
-Es existieren zwei Endpoints, welche im `PlzDataController` definiert sind:
-
-1. `GET /city/{zipCode}` gibt die den Stadtnamen und Staat der Postleitzahl zurück.
-2. `GET /zip/{cityName}` gibt eine Liste aller Postleitzahlen zurück, dessen Stadtname `cityName` entspricht.
-
-In der Mongo Datenbank werden dafür die folgenden Daten aus der 'plz.data' importiert:
-
-1. Key: `{zip}.state` Value: Der Staat, in dem sich die Stadt mit der Postleitzahl `{zip}` befindet
-2. Key: `{zip}.city` Value: Der Name der Stadt mit der Postleitzahl `{zip}`
-3. Key: `{city}.zip` Value: Eine Liste aller Postleitzahlen mit dem Stadtnamen `{city}`
-
-d) Benchmarktest, LoC,
-Arbeitszeit:
-<!-- TABLE_GENERATE_START -->
+### Benchmarktest, LoC, Arbeitszeit
 
 | Database      | Mean          | StdDev        | Loc           | Arbeitszeit
 | ------------- | ------------- | ------------- | ------------- | -------------
 | BenchRedis    | 6.272 ms      | 0.1013        | 95            | \> Mongo, da nicht alles in einem Dokument gespeichert werden kann
 | BenchMongo    | 89.854 ms     | 0.8986        | 79            | \< Redis, keine Json Format verinfacht Entwicklung
-
-<!-- TABLE_GENERATE_END -->
 
 ## Aufgabe 8: Sinn des Lebens
 ### Vorbereitung
