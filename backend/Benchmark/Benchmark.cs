@@ -18,7 +18,7 @@ namespace Benchmark
         }
     }
 
-    [ShortRunJob]
+    // [ShortRunJob]
     public class Benchmark
     {
         private static RedisCityService _redisCityService = null!;

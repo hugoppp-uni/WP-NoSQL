@@ -1,7 +1,7 @@
 [TOC]
 # NoSQL Praktikum - Alexander Könemann, Hugo Protsch
 
-# NoSQl Termin 1
+# NoSQl Termin/Blatt 2
 
 ## Aufgabe 4: PLZ-API Redis
 Die Aufgabe wurde in Form einer REST-API gelöst.
@@ -64,7 +64,37 @@ docker cp /Users/alexander.koenemann/IdeaProjects/NoSQLWP/nosqlHugoAlex/Aufgabe6
 MATCH (n {id : "/c/en/baseball"})-[r:IsA]-(result) RETURN result.id
 ````
 
-# Termin 2
+# Termin/Blatt 3
+## Aufgabe 7: Mongo DB API
+Die Aufgabe wurde in Form einer REST-API gelöst. Die Dokumentation dieser ist unter anderem mithilfe von Swagger auf
+Port `31474` (`http://localhost:31474/swagger/index.html`) vorzufinden.
+### Vorbereitung
+
+- Starten der shell:
+  - `docker compose up` startet die Mongo, Redis und Cassandra DB container.
+
+Es existieren zwei Endpoints, welche im `PlzDataController` definiert sind:
+
+1. `GET /city/{zipCode}` gibt die den Stadtnamen und Staat der Postleitzahl zurück.
+2. `GET /zip/{cityName}` gibt eine Liste aller Postleitzahlen zurück, dessen Stadtname `cityName` entspricht.
+
+In der Mongo Datenbank werden dafür die folgenden Daten aus der 'plz.data' importiert:
+
+1. Key: `{zip}.state` Value: Der Staat, in dem sich die Stadt mit der Postleitzahl `{zip}` befindet
+2. Key: `{zip}.city` Value: Der Name der Stadt mit der Postleitzahl `{zip}`
+3. Key: `{city}.zip` Value: Eine Liste aller Postleitzahlen mit dem Stadtnamen `{city}`
+
+d) Benchmarktest, LoC,
+Arbeitszeit:
+<!-- TABLE_GENERATE_START -->
+
+| Database      | Mean          | StdDev        | Loc           | Arbeitszeit
+| ------------- | ------------- | ------------- | ------------- | -------------
+| BenchRedis    | 6.272 ms      | 0.1013        | 95            | \> Mongo, da nicht alles in einem Dokument gespeichert werden kann
+| BenchMongo    | 89.854 ms     | 0.8986        | 79            | \< Redis, keine Json Format verinfacht Entwicklung
+
+<!-- TABLE_GENERATE_END -->
+
 ## Aufgabe 8: Sinn des Lebens
 ### Vorbereitung
 - Starten der shell:
@@ -154,4 +184,6 @@ db.fussball.update({ name : "HSV" }, { $set : { "abgestiegen" : 1 } })
 ```javascript
 db.fussball.update({ "farben" : { $all : ["weiss"] } }, { $set : { "Waschtemperatur" : 90 } }, { multi : true } )
 ```
-
+## Aufgabe 9: Installieren Wide-Column-Database
+- Starten der shell:
+  - `docker compose up` startet die Mongo, Redis und Cassandra DB container.
