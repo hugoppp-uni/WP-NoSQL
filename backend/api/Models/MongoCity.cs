@@ -8,7 +8,6 @@ namespace backend.Models
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        [JsonIgnore]
         public string Id { get; init; }
         public string Zip { get; init; }
     }

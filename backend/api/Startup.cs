@@ -30,7 +30,7 @@ namespace backend
             services.AddControllers();
             services.AddSwaggerGen(options =>
             {
-                options.SwaggerDoc("v1", new OpenApiInfo { Title = "WPP NoSql API - Alexander Könemann, Hugo Protsch", Version = "v1" });
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = $"WPP NoSql API ({_dbToUse}) - Alexander Könemann, Hugo Protsch", Version = "v1" });
                 options.IncludeXmlComments(Path.Combine("bin","doc.xml"));
             });
 

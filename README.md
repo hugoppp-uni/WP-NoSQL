@@ -82,20 +82,51 @@ So gibt es aktuel einen `MongoCityService` und einen `RedisCityService`.
 Einer dieser Implementationen (wie in `appsettings.json` spezifiziert) wird beim Initialisieren der
 Anwendung in der Klasse `Startup` in den Konstruktor des Controllers injiziert.
 
-Des weitern wurde eine `docker-compose.yml` hinzugefügt, welche es erlaubt alle benötigten Docker
+Des weitern wurde Unterstützung für docker compose  hinzugefügt, welche es erlauben alle benötigten Docker
 Container in einer Datei zu konfigurieren und diese anschließend mit einem Befehl zu starten.
+- `docker-compose-local-dev.yml` startet die services im docker container und mapped die jeweiligen Ports zum Host,
+  sodass die API auf vom Host auf die Container zugreifen kann.
+- `docker-compose.yml` baut die Api mithilfe einer Dockerfile und startet diese in einem Container.
+  Die benötigten Services werden ebenfalls in als Container gestartet, die Ports werden aber nur innerhalb des Netzwerks exposed,
+  anstatt diese zum Host zu mappen. Der Port 8000 wird zum Host gemappt, somit kann die API über diesen erreicht werden.
+
+### MongoDB Desgin
+
+In der MongoDB wird pro Datensatz ein Dokument angelegt, welches die folgenden Felder enthält:
+- `Id` (Von Mongo generiert)
+- `Name` (Name der Stadt)
+- `State` (Der Staat in dem sich die Stadt befindet)
+- `Zip` (Der Zip-Code der Stadt)
 
 ### Vorbereitung
 
-- Starten der shell:
-  - `docker compose up` startet die Mongo, Redis und Cassandra DB container.
+- Starten der container:
+  - Variante 1: API in Container
+    1. `docker-compose up` baut und startet die API; startet die Mongo, Redis und Cassandra DB Container.
+  - Variante 2: API auf Host
+    1. `docker-compose -f docker-compose-local-dev.yml up` startet die Mongo, Redis und Cassandra DB Container. 
+    2. Bauen und starten von `Api` oder `Benchmark`
 
-### Benchmarktest, LoC, Arbeitszeit
+### Benchmark
+Als Benchmark wird eine Folge von blockierenden Datebank abfragen verwendet.
+1. Zips von den folgdenen Städten
+   - `HAMBURG`, `EAST LIVERMORE`, `PINEHURST`, `JEFFERSON`
+2. Stadtnamen der folgenden Zips
+   - `55339` , `76384`, `83455`, `93644`
 
-| Database      | Mean          | StdDev        | Loc           | Arbeitszeit
-| ------------- | ------------- | ------------- | ------------- | -------------
-| BenchRedis    | 6.272 ms      | 0.1013        | 95            | \> Mongo, da nicht alles in einem Dokument gespeichert werden kann
-| BenchMongo    | 89.854 ms     | 0.8986        | 79            | \< Redis, keine Json Format verinfacht Entwicklung
+#### Ergebnisse
+Testsystem: DDR4 RAM, NVMe SSD
+
+|     Method |      Mean |     Error |    StdDev |
+|----------- |----------:|----------:|----------:|
+| BenchRedis |  6.060 ms | 0.0422 ms | 0.0352 ms |
+| BenchMongo | 86.632 ms | 1.3951 ms | 1.2367 ms |
+
+### LoC, Arbeitszeit
+| Database      | Loc           | Arbeitszeit
+| ------------- | ------------- | -------------
+| BenchRedis    | 95            | \> Mongo, da nicht alles in einem Dokument gespeichert werden kann
+| BenchMongo    | 79            | \< Redis, keine Json Format verinfacht Entwicklung
 
 ## Aufgabe 8: Sinn des Lebens
 ### Vorbereitung
