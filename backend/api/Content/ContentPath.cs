@@ -14,7 +14,7 @@ namespace backend.Content
 
         private static string GetAbsoluteContent(string location)
         {
-            return Path.Combine(ExeLocation, "content", location);
+            return Path.Combine(ExeLocation, "Content", location);
         }
 
     }
