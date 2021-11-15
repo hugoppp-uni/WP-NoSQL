@@ -127,9 +127,9 @@ Testsystem: DDR4 RAM, NVMe SSD
 
 ### Vergleich LoC, Arbeitszeit:
 
-## Entwicklung mit Redis: 
+Entwicklung mit Redis: 
 - Aufwendiger als Mongo DB. Es wurden 95 LoC benötigt, der Unterschied resultiert aus dem aufwendigeren Datenmodell. Die gegebenen Daten konnten nicht in einem Dokument gespeichert werden, sondern mussten jeweils mit verschiedenen key/value Kombinationen angelegt und abgefragt werden.  
-## Entwicklung mit Mongo: 
+Entwicklung mit Mongo: 
 - Weniger aufwendig als Redis DB: Es wurden 79 LoC benötigt. Das JSON Format und die Möglichkeit alle Daten in einem Dokument zu speichern verinfachten sowohl das Speichern als auch das Abfragen der Daten. 
 
 ## Aufgabe 8: Sinn des Lebens
