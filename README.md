@@ -106,10 +106,13 @@ In der MongoDB wird pro Datensatz ein Dokument angelegt, welches die folgenden F
   - Variante 2: API auf Host
     1. `docker-compose -f docker-compose-local-dev.yml up` startet die Mongo, Redis und Cassandra DB Container. 
     2. Bauen und starten von `Api` oder `Benchmark`
+  - DB Abfrage über curl (Alternativ swagger verwenden):
+    1. get city and state: 'curl http://localhost:8000/city/01001'
+    2. get zip: 'curl http://localhost:8000/zip/Hamburg'
 
 ### Benchmark
-Als Benchmark wird eine Folge von blockierenden Datebank abfragen verwendet.
-1. Zips von den folgdenen Städten
+Als Benchmark wird eine Folge von blockierenden Datenbank abfragen verwendet.
+1. Zips von den folgenden Städten
    - `HAMBURG`, `EAST LIVERMORE`, `PINEHURST`, `JEFFERSON`
 2. Stadtnamen der folgenden Zips
    - `55339` , `76384`, `83455`, `93644`
