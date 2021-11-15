@@ -125,11 +125,12 @@ Testsystem: DDR4 RAM, NVMe SSD
 | BenchRedis |  6.060 ms | 0.0422 ms | 0.0352 ms |
 | BenchMongo | 86.632 ms | 1.3951 ms | 1.2367 ms |
 
-### LoC, Arbeitszeit
-| Database      | Loc           | Arbeitszeit
-| ------------- | ------------- | -------------
-| BenchRedis    | 95            | \> Mongo, da nicht alles in einem Dokument gespeichert werden kann
-| BenchMongo    | 79            | \< Redis, keine Json Format verinfacht Entwicklung
+### Vergleich LoC, Arbeitszeit:
+
+##Entwicklung mit Redis: 
+- Aufwendiger als Mongo DB. Es wurden 95 LoC benötigt, der Unterschied resultiert aus dem aufwendigeren Datenmodell. Die gegebenen Daten konnten nicht in einem Dokument gespeichert werden, sondern mussten jeweils mit verschiedenen key/value Kombinationen angelegt und abgefragt werden.  
+##Entwicklung mit Mongo: 
+- Weniger aufwendig als Redis DB: Es wurden 79 LoC benötigt. Das JSON Format und die Möglichkeit alle Daten in einem Dokument zu speichern verinfachten sowohl das Speichern als auch das Abfragen der Daten. 
 
 ## Aufgabe 8: Sinn des Lebens
 ### Vorbereitung
