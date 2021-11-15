@@ -88,7 +88,8 @@ Container in einer Datei zu konfigurieren und diese anschließend mit einem Befe
   sodass die API auf vom Host auf die Container zugreifen kann.
 - `docker-compose.yml` baut die Api mithilfe einer Dockerfile und startet diese in einem Container.
   Die benötigten Services werden ebenfalls in als Container gestartet, die Ports werden aber nur innerhalb des Netzwerks exposed,
-  anstatt diese zum Host zu mappen. Der Port 8000 wird zum Host gemappt, somit kann die API über diesen erreicht werden.
+  anstatt diese zum Host zu mappen. Der Port 8000 wird zum Host gemappt, somit kann die API über diesen erreicht werden. 
+  Aktuell wird Swagger in der Variante nicht unterstützt 
 
 ### MongoDB Desgin
 
