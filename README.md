@@ -32,6 +32,47 @@ Container in einer Datei zu konfigurieren und diese anschließend mit einem Befe
   anstatt diese zum Host zu mappen. Der Port 8000 wird zum Host gemappt, somit kann die API über diesen erreicht werden.
   Aktuell wird Swagger in der Variante nicht unterstützt
 
+## Benchmark
+Als Benchmark wird eine Folge von blockierenden Datenbank abfragen verwendet.
+1. Zips von den folgenden Städten
+- `HAMBURG`, `EAST LIVERMORE`, `PINEHURST`, `JEFFERSON`
+2. Stadtnamen der folgenden Zips
+- `55339` , `76384`, `83455`, `93644`
+
+Zum ausführen der Benchmark `docker-compose -f docker-compose-local-dev.yml up` ausführen, anschließen `Benchmark` bauen und starten.
+
+### Ergebnisse
+Testsystem: I7-8700k, DDR4 RAM, NVMe SSD
+
+|         Method |       Mean |     Error |    StdDev |
+|--------------- |-----------:|----------:|----------:|
+|     BenchRedis |   5.950 ms | 0.1175 ms | 0.0981 ms |
+|     BenchMongo |  86.985 ms | 1.6582 ms | 1.7743 ms |
+| BenchCassandra | 222.030 ms | 2.0370 ms | 1.8057 ms |
+
+
+## Vergleich LoC, Arbeitszeit:
+
+Entwicklung mit Redis:
+- Loc 95
+- Aufwendiger als Mongo DB. Der Unterschied resultiert aus dem in der Datenbank nicht vorhandem Datenmodell.
+  Das Mappen von C# Model Klassen auf die Datenbank muss manuell implementiert werden.
+  Die gegebenen Daten konnten nicht in einem Dokument gespeichert werden,
+  sondern mussten jeweils mit verschiedenen key/value Kombinationen angelegt und abgefragt werden.
+
+Entwicklung mit Mongo:
+- Loc: 60
+- Weniger aufwendig als Redis DB: Es wurden 60 LoC benötigt.
+  Das JSON Format und die Möglichkeit alle Daten in einem Dokument zu speichern verinfachten
+  sowohl das Speichern als auch das Abfragen der Daten.
+  Der Treiber übernimmt sowohl das Mappen von Model Klassen auf die Datenbank als auch von der Datenbank auf die Model Klassen.
+
+Entwicklung mit Cassandra:
+- Loc: 60
+- Ähnlich aufwendig wie MongoDB. Hier gibt es allerdings nur ein automatisches Mapping bei Query Abfragen,
+  also von der Datenbank auf Model Klassen. Das Interface zur Abfrage und zum Einfügen ist bei Mongo leichter zu bedienen.
+
+
 # NoSQl Termin/Blatt 2
 
 ## Aufgabe 4: PLZ-API Redis
@@ -118,7 +159,7 @@ In der MongoDB wird pro Datensatz ein Dokument angelegt, welches die folgenden F
 
 ### Benchmark, Vergleich
 Um Dopplungen zu reduzueren ist der Vergleich mit den anderen Datenbanken
-in Abschnitt [Aufgabe 10 - Wide Column Database](#aufgabe-10-wide-column-database) dokumentiert.
+in Abschnitt [Aufbau der aufgabenbergreifenden Api](#aufbau-der-aufgabenbergreifenden-api) dokumentiert.
 
 ## Aufgabe 8: Sinn des Lebens
 ### Vorbereitung
@@ -217,44 +258,9 @@ db.fussball.update({ "farben" : { $all : ["weiss"] } }, { $set : { "Waschtempera
 
 ## Aufgabe 10: Wide-Column-Database
 
-### Benchmark
-Als Benchmark wird eine Folge von blockierenden Datenbank abfragen verwendet.
-1. Zips von den folgenden Städten
-- `HAMBURG`, `EAST LIVERMORE`, `PINEHURST`, `JEFFERSON`
-2. Stadtnamen der folgenden Zips
-- `55339` , `76384`, `83455`, `93644`
-
-Zum ausführen der Benchmark `docker-compose -f docker-compose-local-dev.yml up` ausführen, anschließen `Benchmark` bauen und starten.
-
-#### Ergebnisse
-Testsystem: I7-8700k, DDR4 RAM, NVMe SSD
-
-|         Method |       Mean |     Error |    StdDev |
-|--------------- |-----------:|----------:|----------:|
-|     BenchRedis |   5.950 ms | 0.1175 ms | 0.0981 ms |
-|     BenchMongo |  86.985 ms | 1.6582 ms | 1.7743 ms |
-| BenchCassandra | 222.030 ms | 2.0370 ms | 1.8057 ms |
-
-### Vergleich LoC, Arbeitszeit:
-
-Entwicklung mit Redis:
-- Loc 95
-- Aufwendiger als Mongo DB. Der Unterschied resultiert aus dem in der Datenbank nicht vorhandem Datenmodell. 
-  Das Mappen von C# Model Klassen auf die Datenbank muss manuell implementiert werden. 
-  Die gegebenen Daten konnten nicht in einem Dokument gespeichert werden,
-  sondern mussten jeweils mit verschiedenen key/value Kombinationen angelegt und abgefragt werden.
-
-Entwicklung mit Mongo:
-- Loc: 60
-- Weniger aufwendig als Redis DB: Es wurden 60 LoC benötigt.
-  Das JSON Format und die Möglichkeit alle Daten in einem Dokument zu speichern verinfachten
-  sowohl das Speichern als auch das Abfragen der Daten.
-  Der Treiber übernimmt sowohl das Mappen von Model Klassen auf die Datenbank als auch von der Datenbank auf die Model Klassen.
-
-Entwicklung mit Cassandra:
-- Loc: 60
-- Ähnlich aufwendig wie MongoDB. Hier gibt es allerdings nur ein automatisches Mapping bei Query Abfragen, 
-  also von der Datenbank auf Model Klassen. Das Interface zur Abfrage und zum Einfügen ist bei Mongo leichter zu bedienen.
+### Benchmark, Vergleich
+Um Dopplungen zu reduzueren ist der Vergleich mit den anderen Datenbanken
+in Abschnitt [Aufbau der aufgabenbergreifenden Api](#aufbau-der-aufgabenbergreifenden-api) dokumentiert.
 
 ## Aufgabe 11:
 Grundlage: Klonen eiens Repositories für das Erstellen des Hadoop Containers:
