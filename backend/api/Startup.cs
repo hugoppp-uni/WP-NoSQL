@@ -38,7 +38,7 @@ namespace backend
             // connect to db lazily
             services.AddSingleton((_) => ConnectionCreator.Mongo());
             services.AddSingleton<IConnectionMultiplexer>((_) => ConnectionCreator.Redis());
-            services.AddSingleton<ICluster>((_) => ConnectionCreator.Cassandra());
+            services.AddSingleton((_) => ConnectionCreator.Cassandra());
 
             if (_dbToUse == Db.Redis)
                 services.AddSingleton<ICityService, RedisCityService>();

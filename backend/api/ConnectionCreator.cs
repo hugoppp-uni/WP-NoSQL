@@ -52,7 +52,7 @@ namespace backend
             }
         }
 
-        public static Cluster Cassandra()
+        public static ISession Cassandra()
         {
             try
             {
@@ -63,11 +63,14 @@ namespace backend
                     .AddContactPoint(contactPoint)
                     .Build();
 
-                using ISession cassandra = cluster.Connect("");
-                cassandra.DeleteKeyspaceIfExists(keyspace);
-                cassandra.CreateKeyspace(keyspace);
+                // delete and recreate keyspace
+                using (ISession cassandra = cluster.Connect(""))
+                {
+                    cassandra.DeleteKeyspaceIfExists(keyspace);
+                    cassandra.CreateKeyspace(keyspace);
+                }
 
-                return cluster;
+                return cluster.Connect();
             }
             catch (Exception e)
             {
