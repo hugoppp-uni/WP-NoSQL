@@ -2,12 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Cassandra;
 using MongoDB.Driver;
 using StackExchange.Redis;
 
 namespace backend
 {
-    public class ConnectionCreator
+    /// <summary>
+    /// Methods for creating a connection to databases.
+    /// The database is always flushed first.
+    /// </summary>
+    public static class ConnectionCreator
     {
 
         private static bool IsLocalDevEnvironment => Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == null;
@@ -44,6 +49,29 @@ namespace backend
             catch (Exception e)
             {
                 throw new Exception("Could not connect to mongodb", e);
+            }
+        }
+
+        public static Cluster Cassandra()
+        {
+            try
+            {
+                const string keyspace = "CITY";
+                string contactPoint = IsLocalDevEnvironment ? "localhost" : "cassandra-db";
+                Cluster cluster = Cluster.Builder()
+                    .WithDefaultKeyspace(keyspace)
+                    .AddContactPoint(contactPoint)
+                    .Build();
+
+                using ISession cassandra = cluster.Connect("");
+                cassandra.DeleteKeyspaceIfExists(keyspace);
+                cassandra.CreateKeyspace(keyspace);
+
+                return cluster;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Could not connect to cassandra", e);
             }
         }
     }

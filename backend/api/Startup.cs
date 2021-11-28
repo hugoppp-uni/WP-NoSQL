@@ -1,5 +1,6 @@
 using System.IO;
 using backend.Services;
+using Cassandra;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -37,11 +38,14 @@ namespace backend
             // connect to db lazily
             services.AddSingleton((_) => ConnectionCreator.Mongo());
             services.AddSingleton<IConnectionMultiplexer>((_) => ConnectionCreator.Redis());
+            services.AddSingleton<ICluster>((_) => ConnectionCreator.Cassandra());
 
             if (_dbToUse == Db.Redis)
                 services.AddSingleton<ICityService, RedisCityService>();
             else if (_dbToUse == Db.MongoDB)
                 services.AddSingleton<ICityService, MongoCityService>();
+            else if (_dbToUse == Db.Cassandra)
+                services.AddSingleton<ICityService, CassandraCityService>();
 
             services.AddSingleton<MongoCityService>();
         }
@@ -70,6 +74,7 @@ namespace backend
         {
             Redis,
             MongoDB,
+            Cassandra
         }
     }
 

@@ -13,3 +13,5 @@ services:
   cassandra:
     image: cassandra:latest
     container_name: cassandra-db-dev
+    ports:
+      - "9042:9042"

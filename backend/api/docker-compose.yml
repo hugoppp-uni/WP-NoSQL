@@ -13,6 +13,8 @@ services:
   cassandra:
     image: cassandra:latest
     container_name: cassandra-db
+    expose:
+      - "9042"
   api:
     build:
       dockerfile:
