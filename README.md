@@ -229,3 +229,62 @@ db.fussball.update({ "farben" : { $all : ["weiss"] } }, { $set : { "Waschtempera
 ## Aufgabe 9: Installieren Wide-Column-Database
 - Starten der shell:
   - `docker compose up` startet die Mongo, Redis und Cassandra DB container.
+
+## Aufgabe 11:
+Grundlage: Klonen eiens Repositories für das Erstellen des Hadoop Containers:
+```
+git clone https://github.com/big-data-europe/docker-hadoop.git
+```
+Starten des Docker Containers:
+```
+docker-compose up
+```
+### Testen der Hadoop Umgebung mit einem MapReduce Job auf Basis eines Beispielprogramms für Map Reduce:
+- Quelle der .jar Datei: https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-mapreduce-examples/2.7.1/hadoop-mapreduce-examples-2.7.1-sources.jar
+- Kopieren der .jar Datei in die Namenode des Containers (Die .jar liegt im Aufgabenordner unseres Repos):
+  ```
+  docker cp hadoop-mapreduce-examples-2.7.1-sources.jar namenode:/tmp/
+  ```
+### Erstellen einer WordCount Beispieldatei und Einfügen im Docker Container:
+- Als Textinput wird der erste Band von Harry Potter verwendet: ``harryPotter_wordcount_example.txt``
+- Kopieren der Datei in die Namenode des Containers (Die Quelldatei liegt im Aufgabenordner unseres Repos):
+  ```
+  docker cp harryPotter_wordcount_example.txt namenode:/tmp/
+  ```
+- Die Datei ist jetzt für den Container sichtbar und kann über ein Terminal in den entsprechenden Zielordner kopiert werden:
+- Shell auf der namenode öffnen:
+   ```
+  docker exec -it namenode /bin/bash
+  ```
+- Erstellen eines Inputfolders im HDFS Dateisystem (-p steht für parent folder with children):
+  ```
+  hdfs dfs -mkdir -p /user/root/input
+  ```
+- Verschieben des Textdokumentes in der HDFS Input Ordner:
+  ```
+  hdfs dfs -put tmp/harryPotter_wordcount_example.txt /user/root/input
+  ```
+### Ausführung des Map-Reduce_Jobs zum Testen der Hadoop Umgebung:
+- Parameter: Class: (<...>.jar), Funktion: WordCount, Input, Output
+```
+hadoop jar hadoop-mapreduce-examples-2.7.1-sources.jar org.apache.hadoop.examples.WordCount input output
+```
+Anzeige der Outputdateien und Ergebnis:
+```
+hdfs dfs -ls /user/root/output
+```
+```
+-rw-r--r--   3 root supergroup          0 2021-11-28 11:15 /user/root/output/_SUCCESS
+-rw-r--r--   3 root supergroup     121427 2021-11-28 11:15 /user/root/output/part-r-00000
+```
+Ergebnisdatei ausgeben:
+```
+hdfs dfs -cat /user/root/output/part-r-00000
+```
+Ergebnisdatei in lokales Dateisystem kopieren
+```
+hdfs dfs –copyToLocal /user/root/output/part-r-00000 /tmp
+```
+``` 
+docker cp namenode:/tmp/part-r-00000 /Users/alexander.koenemann/IdeaProjects/NoSQLWP/nosqlHugoAlex/Aufgabe-11-MapReduce/
+```
