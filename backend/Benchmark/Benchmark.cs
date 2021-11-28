@@ -23,6 +23,7 @@ namespace Benchmark
     {
         private static RedisCityService _redisCityService = null!;
         private static MongoCityService _mongoCityService = null!;
+        private static CassandraCityService _cassandraCity = null!;
 
         [GlobalSetup]
         public void GlobalSetup()
@@ -32,6 +33,9 @@ namespace Benchmark
 
             var mongo = ConnectionCreator.Mongo();
             _mongoCityService = new(mongo, NullLogger<MongoCityService>.Instance);
+
+            var cassandra = ConnectionCreator.Cassandra();
+            _cassandraCity = new(cassandra, NullLogger<CassandraCityService>.Instance);
         }
 
         [Benchmark]
@@ -40,10 +44,13 @@ namespace Benchmark
         [Benchmark]
         public object BenchMongo() => Bench(_mongoCityService);
 
+        [Benchmark]
+        public object BenchCassandra() => Bench(_cassandraCity);
+
         private static object Bench(ICityService cityService)
         {
             IEnumerable<string> cities = new[] { "HAMBURG", "EAST LIVERMORE", "PINEHURST", "JEFFERSON" };
-            IEnumerable<string> zips = new[] { "55339" , "76384", "83455", "93644"};
+            IEnumerable<string> zips = new[] { "55339", "76384", "83455", "93644" };
 
             string[] resultZips = cities.SelectMany(city => cityService.GetZipsFromCity(city)).ToArray();
             City?[] resultCities = zips.Select(zip => cityService.GetCityFromZip(zip)).ToArray();
