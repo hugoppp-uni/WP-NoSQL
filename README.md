@@ -159,7 +159,7 @@ In der MongoDB wird pro Datensatz ein Dokument angelegt, welches die folgenden F
 
 ### Benchmark, Vergleich
 Um Dopplungen zu reduzueren ist der Vergleich mit den anderen Datenbanken
-in Abschnitt [Aufbau der aufgabenbergreifenden Api](#aufbau-der-aufgabenbergreifenden-api) dokumentiert.
+in Abschnitt [Aufbau der aufgabenbergreifenden Api](#aufbau-der-aufgabenübergreifenden-api) dokumentiert.
 
 ## Aufgabe 8: Sinn des Lebens
 ### Vorbereitung
@@ -260,7 +260,7 @@ db.fussball.update({ "farben" : { $all : ["weiss"] } }, { $set : { "Waschtempera
 
 ### Benchmark, Vergleich
 Um Dopplungen zu reduzueren ist der Vergleich mit den anderen Datenbanken
-in Abschnitt [Aufbau der aufgabenbergreifenden Api](#aufbau-der-aufgabenbergreifenden-api) dokumentiert.
+in Abschnitt [Aufbau der aufgabenbergreifenden Api](#aufbau-der-aufgabenübergreifenden-api) dokumentiert.
 
 ## Aufgabe 11:
 Grundlage: Klonen eiens Repositories für das Erstellen des Hadoop Containers:
