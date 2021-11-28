@@ -288,3 +288,20 @@ hdfs dfs –copyToLocal /user/root/output/part-r-00000 /tmp
 ``` 
 docker cp namenode:/tmp/part-r-00000 /Users/alexander.koenemann/IdeaProjects/NoSQLWP/nosqlHugoAlex/Aufgabe-11-MapReduce/
 ```
+Ergebnisdatei mit Python Script auswerte, um TOP 10 Wörter aus dem ersten Band anzuzeigen:
+``` 
+python3 findMaxInWordcountOutput.py
+```
+Ergebnis der TOP 10 Wörter aus Harry Potter 1:
+``` 
+the: 3654
+and: 2139
+to: 1827
+a: 1578
+Harry: 1254
+of: 1233
+was: 1150
+he: 1020
+in: 898
+his: 892
+```
