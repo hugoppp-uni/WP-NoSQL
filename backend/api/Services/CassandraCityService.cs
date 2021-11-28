@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using backend.Models;
 using Cassandra;
+using Cassandra.Mapping;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 
@@ -12,34 +13,33 @@ namespace backend.Services
     public class CassandraCityService : ICityService
     {
         private readonly ISession _cassandra;
+        Mapper mapper;
 
         public CassandraCityService(ISession cassandra, ILogger<CassandraCityService> logger)
         {
             _cassandra = cassandra;
-            ImportToCassandra(_cassandra);
-            logger.LogInformation("Imported data to cassandra");
+            mapper = new(_cassandra);
+            int rowCount = ImportToCassandra(_cassandra);
+            logger.LogInformation("Imported {} rows to cassandra", rowCount);
         }
 
         public City? GetCityFromZip(string zip)
         {
             ICityService.ValidateZip(zip);
-            Row? cityRow = _cassandra
-                .Execute($"SELECT * from CITY where zip='{zip}'")
-                .FirstOrDefault();
-
-            if (cityRow is null)
-                return null;
-
-            return new City() { Name = cityRow.GetValue<string>("name"), State = cityRow.GetValue<string>("state") };
+            return mapper.SingleOrDefault<City>($"SELECT * from CITY where zip=?", zip);
         }
 
         public IEnumerable<string> GetZipsFromCity(string city)
         {
-            RowSet cityRowSet = _cassandra.Execute($"SELECT zip from CITY where name='{city}' ALLOW FILTERING");
+            RowSet cityRowSet = _cassandra.Execute(
+                _cassandra.Prepare(
+                    $"SELECT zip from CITY where name=? ALLOW FILTERING"
+                ).Bind(city));
+
             return cityRowSet.Select(cityRow => cityRow.GetValue<string>("zip"));
         }
 
-        private static void ImportToCassandra(ISession cassandra)
+        private static int ImportToCassandra(ISession cassandra)
         {
             cassandra.Execute(
                 "CREATE TABLE CITY (zip text, name text, state text, soccer text, PRIMARY KEY(zip))"
@@ -51,7 +51,7 @@ namespace backend.Services
                                     $"VALUES ('{json.GetString("_id")}', '{json.GetString("city")}', '{json.GetString("state")}')")
                     .Select(query => cassandra.ExecuteAsync(new SimpleStatement(query)));
 
-            Task.WhenAll(insertTasks);
+            return Task.WhenAll(insertTasks).Result.Length;
         }
 
     }
