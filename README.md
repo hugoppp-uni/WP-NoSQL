@@ -1,15 +1,42 @@
 [TOC]
 # NoSQL Praktikum - Alexander Könemann, Hugo Protsch
 
+# Aufbau der aufgabenübergreifenden API
+
+## Endpoints
+Es existieren zwei Endpoints, welche im `ZipDataController` definiert sind:
+1. `GET /city/{zipCode}` gibt die den Stadtnamen und Staat der Postleitzahl zurück.
+2. `GET /zip/{cityName}` gibt eine Liste aller Postleitzahlen zurück, dessen Stadtname `cityName` entspricht.
+
+## Architekur
+
+Der REST-API Controller `PlzDataController` erhält über Dependency-Injection einen `ICityService` übergeben.
+Dieses Interface stellt zwei Methoden bereit:
+1. `City? GetCityFromZip(string zip);`
+2. `IEnumerable<string> GetZipsFromCity(string city);`
+
+Dieses Interface wird jeweils einmal pro Datenbank implementiert.
+So gibt es einen `MongoCityService`, `RedisCityService` und `CassandraCityService`.
+Einer dieser Implementationen (wie in `appsettings.json` spezifiziert) wird beim Initialisieren der
+Anwendung in der Klasse `Startup` in den Konstruktor des Controllers injiziert.
+
+Dafür kann in den `appsettings.json` ein Wert für `Db` gewählt werden.
+Mögliche Werte sind `Redis`, `MongoDB` und `Cassandra`.
+
+Des weitern wurde Unterstützung für docker compose  hinzugefügt, welche es erlauben alle benötigten Docker
+Container in einer Datei zu konfigurieren und diese anschließend mit einem Befehl zu starten.
+- `docker-compose-local-dev.yml` startet die services im docker container und mapped die jeweiligen Ports zum Host,
+  sodass die API auf vom Host auf die Container zugreifen kann.
+- `docker-compose.yml` baut die Api mithilfe einer Dockerfile und startet diese in einem Container.
+  Die benötigten Services werden ebenfalls in als Container gestartet, die Ports werden aber nur innerhalb des Netzwerks exposed,
+  anstatt diese zum Host zu mappen. Der Port 8000 wird zum Host gemappt, somit kann die API über diesen erreicht werden.
+  Aktuell wird Swagger in der Variante nicht unterstützt
+
 # NoSQl Termin/Blatt 2
 
 ## Aufgabe 4: PLZ-API Redis
 Die Aufgabe wurde in Form einer REST-API gelöst.
 Die Dokumentation dieser ist unter anderem mithilfe von Swagger auf Port `31474` (`http://localhost:31474/swagger`) vorzufinden.
-
-Es existieren zwei Endpoints, welche im `ZipDataController` definiert sind:
-1. `GET /city/{zipCode}` gibt die den Stadtnamen und Staat der Postleitzahl zurück.
-2. `GET /zip/{cityName}` gibt eine Liste aller Postleitzahlen zurück, dessen Stadtname `cityName` entspricht.
 
 In der Redis Datenbank werden dafür die folgenden Daten importiert:
 
@@ -67,29 +94,6 @@ MATCH (n {id : "/c/en/baseball"})-[r:IsA]-(result) RETURN result.id
 # Termin/Blatt 3
 ## Aufgabe 7: Mongo DB API
 Für die Aufgabe wird weiterhin die REST-API aus dem vorherigen Aufgabenblatt verwendet.
-In den `appsettings.json` wurde ein zusätzlicher Key `Db` eingeführt, über den zwischen `Redis`, `MongoDB` und zukünftig 
-`Cassandra` gewählt werden kann.
-
-### Architekur
-
-Der REST-API Controller `PlzDataController` erhält über Dependency-Injection einen `ICityService` übergeben.
-Dieses Interface stellt zwei Methoden bereit:
-1. `City? GetCityFromZip(string zip);`
-2. `IEnumerable<string> GetZipsFromCity(string city);`
-
-Dieses Interface wird jeweils einmal pro Datenbank implementiert.
-So gibt es aktuel einen `MongoCityService` und einen `RedisCityService`.
-Einer dieser Implementationen (wie in `appsettings.json` spezifiziert) wird beim Initialisieren der
-Anwendung in der Klasse `Startup` in den Konstruktor des Controllers injiziert.
-
-Des weitern wurde Unterstützung für docker compose  hinzugefügt, welche es erlauben alle benötigten Docker
-Container in einer Datei zu konfigurieren und diese anschließend mit einem Befehl zu starten.
-- `docker-compose-local-dev.yml` startet die services im docker container und mapped die jeweiligen Ports zum Host,
-  sodass die API auf vom Host auf die Container zugreifen kann.
-- `docker-compose.yml` baut die Api mithilfe einer Dockerfile und startet diese in einem Container.
-  Die benötigten Services werden ebenfalls in als Container gestartet, die Ports werden aber nur innerhalb des Netzwerks exposed,
-  anstatt diese zum Host zu mappen. Der Port 8000 wird zum Host gemappt, somit kann die API über diesen erreicht werden. 
-  Aktuell wird Swagger in der Variante nicht unterstützt 
 
 ### MongoDB Desgin
 
