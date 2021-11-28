@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text.Json;
-using backend.Content;
 using backend.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
@@ -28,52 +25,35 @@ namespace backend.Services
 
         private void ImportToMongo()
         {
-            
-            JsonElement[] jsons = File.ReadAllLines(ContentPath.PlzData)
-                .Select(line => JsonSerializer.Deserialize<JsonElement>(line))
-                .ToArray();
+            IEnumerable<MongoCity> mongoCities = Content.PlzData
+                .Select(jsonElement => new MongoCity()
+                {
+                    Name = jsonElement.GetString("city") ?? "",
+                    State = jsonElement.GetString("state") ?? "",
+                    Zip = jsonElement.GetString("_id") ?? throw new ArgumentException("no zip provided")
+                });
 
-            List<MongoCity> mongoCities = new();
-            foreach (var jsonElement in jsons)
-            {
-                String zip = jsonElement.GetString("_id");
-                String cityName = jsonElement.GetString("city");
-                String state = jsonElement.GetString("state");
-                mongoCities.Add(new MongoCity(){Name = cityName, State = state, Zip=zip});
-            }
-            
             _cityCollection.InsertMany(mongoCities);
             _logger.LogInformation("Imported Data to Mongo");
         }
 
         public City? GetCityFromZip(string zip)
         {
-            if (!zip.All(char.IsDigit))
-                throw new ArgumentException($"'{zip}' is not numeric", nameof(zip));
-            if (zip.Length != 5)
-                throw new ArgumentException($"'{zip}' with length '{zip.Length}') is invalid", nameof(zip));
+            ICityService.ValidateZip(zip);
 
-            List<MongoCity> queryResultList = _cityCollection.FindSync(city => city.Zip == zip).ToList();
+            MongoCity? queryResultCity = _cityCollection
+                .FindSync(city => city.Zip == zip)
+                .FirstOrDefault();
 
-            if (!queryResultList.Any()) 
-            {
-                return null; // If no matches were found
-            }
+            if (queryResultCity is null) return null;
 
-            MongoCity queryResult = queryResultList.First();
-            return new City() {Name = queryResult.Name, State = queryResult.State};
+            return new City() { Name = queryResultCity.Name, State = queryResultCity.State };
         }
 
         public IEnumerable<string> GetZipsFromCity(string cityName)
         {
-            List<MongoCity> queryResultList = _cityCollection.FindSync(city => city.Name == cityName).ToList();
-            List<String> resultList = new();
-            foreach (var mongoCity in queryResultList)
-            {
-                resultList.Add(mongoCity.Zip);
-            }
-
-            return resultList;
+            List<MongoCity> queryResultCities = _cityCollection.FindSync(city => city.Name == cityName).ToList();
+            return queryResultCities.Select(city => city.Zip);
         }
     }
 }

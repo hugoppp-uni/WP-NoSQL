@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using backend.Content;
 using backend.Models;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
@@ -29,10 +27,7 @@ namespace backend.Services
 
         public City? GetCityFromZip(string zip)
         {
-            if (!zip.All(char.IsDigit))
-                throw new ArgumentException($"'{zip}' is not numeric", nameof(zip));
-            if (zip.Length != 5)
-                throw new ArgumentException($"'{zip}' with length '{zip.Length}') is invalid", nameof(zip));
+            ICityService.ValidateZip(zip);
 
             var redisDb = _redis.GetDatabase();
             RedisValue name = redisDb.StringGet(zip + NameKeyPostfix);
@@ -52,15 +47,11 @@ namespace backend.Services
         {
             var db = redis.GetDatabase();
 
-            JsonElement[] jsons = File.ReadAllLines(ContentPath.PlzData)
-                .Select(line => JsonSerializer.Deserialize<JsonElement>(line))
-                .ToArray();
-
-            Task task1 = db.StringSetAsync(jsons.Select(ZipCityNameSelector).ToArray());
-            Task task2 = db.StringSetAsync(jsons.Select(ZipStateSelector).ToArray());
+            Task task1 = db.StringSetAsync(Content.PlzData.Select(ZipCityNameSelector).ToArray());
+            Task task2 = db.StringSetAsync(Content.PlzData.Select(ZipStateSelector).ToArray());
 
             IEnumerable<Task> tasks =
-                jsons.Select(CityNameZipSelector)
+                Content.PlzData.Select(CityNameZipSelector)
                     .GroupBy(x => x.Key) //group by zip
                     .Select(cityNameZipsPair =>
                         db.ListLeftPushAsync(

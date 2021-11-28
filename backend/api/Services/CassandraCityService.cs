@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
-using backend.Content;
 using backend.Models;
 using Cassandra;
 using Microsoft.AspNetCore.Authentication;
@@ -25,20 +22,21 @@ namespace backend.Services
 
         public City? GetCityFromZip(string zip)
         {
-            Row? row = _cassandra
+            ICityService.ValidateZip(zip);
+            Row? cityRow = _cassandra
                 .Execute($"SELECT * from CITY where zip='{zip}'")
                 .FirstOrDefault();
 
-            if (row is null)
+            if (cityRow is null)
                 return null;
 
-            return new City() { Name = row.GetValue<string>("name"), State = row.GetValue<string>("state") };
+            return new City() { Name = cityRow.GetValue<string>("name"), State = cityRow.GetValue<string>("state") };
         }
 
         public IEnumerable<string> GetZipsFromCity(string city)
         {
-            RowSet rowSet = _cassandra.Execute($"SELECT zip from CITY where name='{city}' ALLOW FILTERING");
-            return rowSet.Select(x => x.GetValue<string>("zip"));
+            RowSet cityRowSet = _cassandra.Execute($"SELECT zip from CITY where name='{city}' ALLOW FILTERING");
+            return cityRowSet.Select(cityRow => cityRow.GetValue<string>("zip"));
         }
 
         private static void ImportToCassandra(ISession cassandra)
@@ -48,8 +46,7 @@ namespace backend.Services
             );
 
             IEnumerable<Task<RowSet>> insertTasks =
-                File.ReadAllLines(ContentPath.PlzData)
-                    .Select(line => JsonSerializer.Deserialize<JsonElement>(line))
+                Content.PlzData
                     .Select(json => $"INSERT INTO CITY (zip, name, state) " +
                                     $"VALUES ('{json.GetString("_id")}', '{json.GetString("city")}', '{json.GetString("state")}')")
                     .Select(query => cassandra.ExecuteAsync(new SimpleStatement(query)));
