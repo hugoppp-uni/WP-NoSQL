@@ -23,6 +23,7 @@ namespace backend.Services
             logger.LogInformation("Imported {} rows to cassandra", rowCount);
         }
 
+
         public City? GetCityFromZip(string zip)
         {
             ICityService.ValidateZip(zip);
@@ -44,6 +45,11 @@ namespace backend.Services
             cassandra.Execute(
                 "CREATE TABLE CITY (zip text, name text, state text, soccer text, PRIMARY KEY(zip))"
             );
+            // Aufgabe b.): Neue Spalte hinzufügen
+            cassandra.Execute("ALTER TABLE CITY ADD Fussball text");
+            // Aufgabe b.) Werte für Fussball für die Städte Bremen und Hamburg ändern
+            cassandra.Execute("UPDATE CITY SET Fussball = 'Ja' WHERE name = 'BREMEN'");
+            cassandra.Execute("UPDATE CITY SET Fussball = 'Ja' WHERE name = 'HAMBURG'");
 
             IEnumerable<Task<RowSet>> insertTasks =
                 Content.PlzData
@@ -53,6 +59,7 @@ namespace backend.Services
 
             return Task.WhenAll(insertTasks).Result.Length;
         }
+
 
     }
 }
