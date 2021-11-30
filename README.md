@@ -262,6 +262,17 @@ db.fussball.update({ "farben" : { $all : ["weiss"] } }, { $set : { "Waschtempera
 Um Dopplungen zu reduzueren ist der Vergleich mit den anderen Datenbanken
 in Abschnitt [Aufbau der aufgabenbergreifenden Api](#aufbau-der-aufgabenübergreifenden-api) dokumentiert.
 
+### Aufgabenteil b.) 
+- Hinzufügen einer column in die bestehende Table:
+```
+ALTER TABLE CITY ADD Fussball text
+```
+- Werte für Fussball für die Städte Bremen und Hamburg eintragen:
+```
+UPDATE CITY SET Fussball = 'Ja' WHERE name = 'BREMEN'
+UPDATE CITY SET Fussball = 'Ja' WHERE name = 'HAMBURG'
+```
+
 ## Aufgabe 11:
 Grundlage: Klonen eiens Repositories für das Erstellen des Hadoop Containers:
 ```
